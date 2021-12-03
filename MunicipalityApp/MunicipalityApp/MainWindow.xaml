@@ -1,0 +1,612 @@
+﻿<Window x:Class="MunicipalityApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MunicipalityApp"
+        xmlns:p="clr-namespace:MunicipalityApp.Properties"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:map="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+        xmlns:wpf="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
+        xmlns:mvvm_light="http://www.galasoft.ch/mvvmlight"
+        xmlns:wasp="clr-namespace:MunicipalityApp.Webservices.WASP"
+        mc:Ignorable="d"
+        Title="Municipality App"
+        ResizeMode="CanMinimize"
+        Height="700"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF202020"
+        Width="1000">
+    <Window.Resources>
+
+    </Window.Resources>
+
+    <!--View model-->
+    <Window.DataContext>
+        <local:MainViewModel />
+    </Window.DataContext>
+
+    <!--Event to commands-->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <mvvm_light:EventToCommand Command="{Binding WindowLoadedCommand}"
+                                       PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <!--Root-->
+    <Grid Background="#FF202020">
+        <!--Progress-->
+        <Grid x:Name="gridProgress"
+              Visibility="{Binding ProgressVisibility}">
+            <StackPanel Width="200"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <Label Content="{Binding ProgressMessage}"
+                       FontSize="16"
+                       HorizontalContentAlignment="Center"
+                       Padding="0, 5, 0, 10"
+                       Foreground="White"
+                       Style="{StaticResource styleLabel}" />
+                <ProgressBar IsIndeterminate="True"
+                             Height="35"
+                             Foreground="Orange" />
+            </StackPanel>
+        </Grid>
+
+        <!--Login-->
+        <Grid x:Name="gridLogin"
+              Visibility="{Binding LoginViewVisibility}">
+
+            <StackPanel HorizontalAlignment="Center"
+                        Width="200"
+                        VerticalAlignment="Center">
+
+                <Label Content="Bee A Helper"
+                       FontSize="30"
+                       HorizontalContentAlignment="Center"
+                       Padding="0, 5, 0, 40"
+                       Foreground="White"
+                       Style="{StaticResource styleLabel}" />
+
+                <Label Content="{x:Static p:Resources.username}"
+                       FontSize="20"
+                       Padding="0, 5, 0, 5"
+                       Foreground="White"
+                       Style="{StaticResource styleLabel}" />
+
+                <TextBox Style="{StaticResource styleTextBoxWaterMark}"
+                         Height="35"
+                         Padding="5,-1,5,0"
+                         FontWeight="Bold"
+                         Text="{Binding Username, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+                <Label Content="{x:Static p:Resources.password}"
+                       FontSize="20"
+                       Padding="0, 5, 0, 5"
+                       Foreground="White"
+                       Style="{StaticResource styleLabel}" />
+
+                <PasswordBox x:Name="pbLogin"
+                             Height="35"
+                             VerticalContentAlignment="Center"
+                             Padding="5,-1,5,0"
+                             FontWeight="Bold"
+                             PasswordChanged="PasswordBox_PasswordChanged"
+                             Style="{DynamicResource stylePasswordBox}" />
+
+                <Button Style="{StaticResource styleButton}"
+                        Height="35"
+                        Margin="0, 5, 0, 0"
+                        FontSize="16"
+                        Command="{Binding LogInCommand}"
+                        Content="{x:Static p:Resources.log_in}"
+                        Background="{StaticResource brushYellowOrange}" />
+
+            </StackPanel>
+
+        </Grid>
+
+
+        <!--Main-->
+        <Grid Visibility="{Binding MainViewVisibility}"
+              Background="#FF202020">
+            <TabControl Style="{StaticResource styleTabControl}"
+                        x:Name="tbRoot"
+                        Background="#FF202020">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <mvvm_light:EventToCommand Command="{Binding TabControlSelectionChangedCommand}"
+                                                   PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <!--Log out-->
+                <TabItem Style="{StaticResource styleTabItem}"
+                         Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                         Foreground="White"
+                         IsSelected="True"
+                         Background="{StaticResource brushYellowOrange}">
+                    <TabItem.Header>
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="5*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <wpf:MaterialIcon Kind="Logout"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              Width="40"
+                                              Foreground="Black"
+                                              Grid.Row="1"
+                                              Height="40" />
+                            <Label Content="{x:Static p:Resources.log_out}"
+                                   VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   Foreground="Black"
+                                   FontFamily="Calibri"
+                                   FontWeight="Bold"
+                                   Padding="0, 5, 0, 0"
+                                   TextOptions.TextFormattingMode="Ideal"
+                                   Grid.Row="2" />
+                        </Grid>
+                    </TabItem.Header>
+                    <Grid Background="White">
+
+
+                    </Grid>
+                </TabItem>
+                <!--Overview-->
+                <TabItem Style="{StaticResource styleTabItem}"
+                         Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                         Foreground="White"
+                         IsSelected="True"
+                         Background="{StaticResource brushYellowOrange}">
+                    <TabItem.Header>
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="5*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <wpf:MaterialIcon Kind="MapOutline"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              Width="40"
+                                              Foreground="Black"
+                                              Grid.Row="1"
+                                              Height="40" />
+                            <Label Content="{x:Static p:Resources.overview}"
+                                   VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   Foreground="Black"
+                                   FontFamily="Calibri"
+                                   FontWeight="Bold"
+                                   Padding="0, 5, 0, 0"
+                                   TextOptions.TextFormattingMode="Ideal"
+                                   Grid.Row="2" />
+                        </Grid>
+                    </TabItem.Header>
+                    <Grid Background="#FF202020">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+
+                            <Label Content="Filter"
+                                   FontSize="20"
+                                   HorizontalContentAlignment="Center"
+                                   Padding="0, 5, 0, 5"
+                                   Foreground="White"
+                                   Style="{StaticResource styleLabel}" />
+
+                            <StackPanel Orientation="Vertical"
+                                        Margin="2, 0, 2, 0">
+
+                                <!--Statuses-->
+                                <Label Content="Statuses"
+                                       FontSize="16"
+                                       Padding="0, 5, 0, 5"
+                                       Foreground="White"
+                                       Style="{StaticResource styleLabel}" />
+
+                                <ListBox BorderBrush="White"
+                                         BorderThickness="1"
+                                         Background="Transparent"
+                                         Grid.Row="1"
+                                         Height="Auto"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         Margin="2"
+                                         VerticalAlignment="Stretch"
+                                         HorizontalAlignment="Stretch"
+                                         HorizontalContentAlignment="Stretch"
+                                         ItemsSource="{Binding IssueStates}">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem"
+                                               BasedOn="{StaticResource styleNoHover}" />
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.Resources>
+                                        <ResourceDictionary>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius"
+                                                        Value="5" />
+                                            </Style>
+
+                                            <!--IssueState-->
+                                            <DataTemplate DataType="{x:Type wasp:IssueState}">
+                                                <Border Margin="0"
+                                                        Background="White"
+                                                        CornerRadius="5"
+                                                        BorderThickness="0"
+                                                        BorderBrush="Black"
+                                                        Height="30">
+                                                    <Grid TextOptions.TextFormattingMode="Ideal"
+                                                          Margin="5">
+
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <CheckBox Style="{StaticResource styleCheckBoxBoxOnly}"
+                                                                  BorderBrush="Black"
+                                                                  IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                  Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                                  Grid.Column="2" />
+
+
+                                                        <Border Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                                CornerRadius="5"
+                                                                Background="{Binding StateColor}"
+                                                                Grid.Column="0" />
+
+                                                        <Label Style="{StaticResource styleLabel}"
+                                                               Content="{Binding Name}"
+                                                               Grid.Column="1"
+                                                               Padding="5, 2, 0, 0" />
+
+
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ResourceDictionary>
+
+
+                                    </ListBox.Resources>
+                                </ListBox>
+
+                                <!--Categories-->
+                                <Label Content="Categories"
+                                       FontSize="16"
+                                       Padding="0, 5, 0, 5"
+                                       Foreground="White"
+                                       Style="{StaticResource styleLabel}" />
+
+                                <ListBox BorderBrush="White"
+                                         BorderThickness="1"
+                                         Background="Transparent"
+                                         Grid.Row="1"
+                                         Height="150"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         Margin="2"
+                                         VerticalAlignment="Stretch"
+                                         HorizontalAlignment="Stretch"
+                                         HorizontalContentAlignment="Stretch"
+                                         ItemsSource="{Binding Categories}">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem"
+                                               BasedOn="{StaticResource styleNoHover}" />
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.Resources>
+                                        <ResourceDictionary>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius"
+                                                        Value="5" />
+                                            </Style>
+
+                                            <!--Category-->
+                                            <DataTemplate DataType="{x:Type wasp:Category}">
+                                                <Border Margin="0"
+                                                        Background="White"
+                                                        CornerRadius="5"
+                                                        BorderThickness="0"
+                                                        BorderBrush="Black"
+                                                        Height="30">
+                                                    <Grid TextOptions.TextFormattingMode="Ideal"
+                                                          Margin="5">
+
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <CheckBox Style="{StaticResource styleCheckBoxBoxOnly}"
+                                                                  BorderBrush="Black"
+                                                                  IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                  Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                                  Grid.Column="1" />
+
+                                                        <Label Style="{StaticResource styleLabel}"
+                                                               Content="{Binding Name}"
+                                                               Grid.Column="0"
+                                                               Padding="5, 2, 0, 0" />
+
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ResourceDictionary>
+
+
+                                    </ListBox.Resources>
+                                </ListBox>
+
+                                <!--Subcategories-->
+                                <Label Content="Subcategories"
+                                       FontSize="16"
+                                       Padding="0, 5, 0, 5"
+                                       Foreground="White"
+                                       Style="{StaticResource styleLabel}" />
+
+                                <ListBox BorderBrush="White"
+                                         BorderThickness="1"
+                                         Background="Transparent"
+                                         Grid.Row="1"
+                                         Height="200"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         Margin="2"
+                                         VerticalAlignment="Stretch"
+                                         HorizontalAlignment="Stretch"
+                                         HorizontalContentAlignment="Stretch"
+                                         ItemsSource="{Binding SubCategories}">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem"
+                                               BasedOn="{StaticResource styleNoHover}" />
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.Resources>
+                                        <ResourceDictionary>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius"
+                                                        Value="5" />
+                                            </Style>
+
+                                            <!--Category-->
+                                            <DataTemplate DataType="{x:Type wasp:Category}">
+                                                <StackPanel>
+                                                    <Border Margin="0"
+                                                            Background="{StaticResource brushYellowOrange}"
+                                                            CornerRadius="5"
+                                                            BorderThickness="0"
+                                                            BorderBrush="Black"
+                                                            Height="30">
+                                                        <Grid TextOptions.TextFormattingMode="Ideal"
+                                                              Margin="5">
+
+                                                            <Label Style="{StaticResource styleLabel}"
+                                                                   Content="{Binding Name}"
+                                                                   Padding="5, 1, 0, 0" />
+
+                                                        </Grid>
+                                                    </Border>
+                                                    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                                                  VerticalScrollBarVisibility="Disabled">
+                                                        <ListBox BorderBrush="Transparent"
+                                                                 BorderThickness="0"
+                                                                 Background="Transparent"
+                                                                 Grid.Row="1"
+                                                                 Height="Auto"
+                                                                 Padding="0"
+                                                                 Margin="0"
+                                                                 MaxHeight="150"
+                                                                 ScrollViewer.IsDeferredScrollingEnabled="false"
+                                                                 ScrollViewer.CanContentScroll="false"
+                                                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"                                                                 
+                                                                 VerticalAlignment="Stretch"
+                                                                 HorizontalAlignment="Stretch"
+                                                                 HorizontalContentAlignment="Stretch"
+                                                                 ItemsSource="{Binding SubCategories}">
+                                                            <ListBox.ItemContainerStyle>
+                                                                <Style TargetType="ListBoxItem"
+                                                                       BasedOn="{StaticResource styleNoHover}" />
+                                                            </ListBox.ItemContainerStyle>
+                                                            <ListBox.Resources>
+                                                                <ResourceDictionary>
+                                                                    <Style TargetType="Border">
+                                                                        <Setter Property="CornerRadius"
+                                                                                Value="5" />
+                                                                    </Style>
+
+                                                                    <!--SubCategory-->
+                                                                    <DataTemplate DataType="{x:Type wasp:SubCategory}">
+                                                                        <Border Margin="0"
+                                                                                Background="White"
+                                                                                CornerRadius="5"
+                                                                                BorderThickness="0"
+                                                                                BorderBrush="Black"
+                                                                                Height="30">
+                                                                            <Grid TextOptions.TextFormattingMode="Ideal"
+                                                                                  Margin="5">
+
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="*" />
+                                                                                    <ColumnDefinition Width="Auto" />
+                                                                                </Grid.ColumnDefinitions>
+
+                                                                                <CheckBox Style="{StaticResource styleCheckBoxBoxOnly}"
+                                                                                          BorderBrush="Black"
+                                                                                          IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                          Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                                                          Grid.Column="1" />
+
+                                                                                <Label Style="{StaticResource styleLabel}"
+                                                                                       Content="{Binding Name}"
+                                                                                       Grid.Column="0"
+                                                                                       Padding="5, 2, 0, 0" />
+
+                                                                            </Grid>
+                                                                        </Border>
+                                                                    </DataTemplate>
+                                                                </ResourceDictionary>
+
+
+                                                            </ListBox.Resources>
+                                                        </ListBox>
+                                                    </ScrollViewer>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ResourceDictionary>
+
+
+                                    </ListBox.Resources>
+                                </ListBox>
+
+                                <Button Style="{StaticResource styleButton}"
+                                        Height="35"
+                                        Margin="0, 5, 0, 0"
+                                        FontSize="16"
+                                        Command="{Binding ApplyFilterCommand}"
+                                        Content="{x:Static p:Resources.apply_filter}"
+                                        Background="{StaticResource brushYellowOrange}" />
+
+                            </StackPanel>
+                        </StackPanel>
+
+                        <map:Map CredentialsProvider="Av8YZ4gdRGw7syiclnge2cg2crw5gS3vvBJAy826fy4qc2fZ9wykitbttak-JAQj"
+                                 Center="57.03491531692564, 9.932436887046249"
+                                 x:Name="mapControl"
+                                 Grid.Column="1"
+                                 ZoomLevel="12" />
+
+                    </Grid>
+                </TabItem>
+                <!--Reports-->
+                <TabItem Style="{StaticResource styleTabItem}"
+                         Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                         Foreground="White"
+                         Background="{StaticResource brushYellowOrange}">
+                    <TabItem.Header>
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="5*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <wpf:MaterialIcon Kind="FlagOutline"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              Foreground="Black"
+                                              Width="40"
+                                              Grid.Row="1"
+                                              Height="40" />
+                            <Label Content="{x:Static p:Resources.reports}"
+                                   VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   Foreground="Black"
+                                   FontFamily="Calibri"
+                                   FontWeight="Bold"
+                                   Padding="0, 5, 0, 0"
+                                   TextOptions.TextFormattingMode="Ideal"
+                                   Grid.Row="2" />
+                        </Grid>
+                    </TabItem.Header>
+                    <Grid>
+
+
+                    </Grid>
+                </TabItem>
+                <!--Blocked-->
+                <TabItem Style="{StaticResource styleTabItem}"
+                         Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                         Foreground="White"
+                         Background="{StaticResource brushYellowOrange}">
+                    <TabItem.Header>
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="5*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <wpf:MaterialIcon Kind="Block"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              Width="40"
+                                              Foreground="Black"
+                                              Grid.Row="1"
+                                              Height="40" />
+                            <Label Content="{x:Static p:Resources.blocked}"
+                                   VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   Foreground="Black"
+                                   FontFamily="Calibri"
+                                   FontWeight="Bold"
+                                   Padding="0, 5, 0, 0"
+                                   TextOptions.TextFormattingMode="Ideal"
+                                   Grid.Row="2" />
+                        </Grid>
+                    </TabItem.Header>
+                    <Grid>
+
+
+                    </Grid>
+                </TabItem>
+                <!--Sign up-->
+                <TabItem Style="{StaticResource styleTabItem}"
+                         Height="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
+                         Foreground="White"
+                         Background="{StaticResource brushYellowOrange}">
+                    <TabItem.Header>
+                        <Grid Margin="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="5*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <wpf:MaterialIcon Kind="UserAddOutline"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              Width="40"
+                                              Foreground="Black"
+                                              Grid.Row="1"
+                                              Height="40" />
+                            <Label Content="{x:Static p:Resources.sign_up}"
+                                   VerticalAlignment="Stretch"
+                                   HorizontalAlignment="Stretch"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   Foreground="Black"
+                                   FontFamily="Calibri"
+                                   FontWeight="Bold"
+                                   Padding="0, 5, 0, 0"
+                                   TextOptions.TextFormattingMode="Ideal"
+                                   Grid.Row="2" />
+                        </Grid>
+                    </TabItem.Header>
+                    <Grid>
+
+
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</Window>

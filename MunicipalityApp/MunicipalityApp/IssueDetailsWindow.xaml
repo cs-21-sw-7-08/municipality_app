@@ -1,0 +1,91 @@
+﻿<Window x:Class="MunicipalityApp.IssueDetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MunicipalityApp"
+        xmlns:p="clr-namespace:MunicipalityApp.Properties"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF202020"
+        Title="IssueDetailsWindow" Height="450" Width="800">
+
+    <!--View model-->
+    <Window.DataContext>
+        <local:IssueDetailsViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <StackPanel>
+                <Label Content="Status"
+                       FontSize="16"
+                       Padding="5, 5, 0, 5"
+                       Foreground="White"
+                       Style="{StaticResource styleLabel}" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="1">
+                <Label Content="Description"
+                       FontSize="16"
+                       Padding="5, 5, 0, 5"
+                       Foreground="White"
+                       Style="{StaticResource styleLabel}" />
+
+                <Label Content="{Binding Description}"
+                       FontSize="14"
+                       Padding="5, 5, 0, 5"
+                       Foreground="#FFE0E0E0"                      
+                       Style="{StaticResource styleLabel}" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Content="Pictures"
+                   FontSize="16"
+                   Padding="5, 5, 0, 5"
+                   Foreground="White"
+                   Style="{StaticResource styleLabel}" />
+        </Grid>
+
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Label Content="Responses"
+                   FontSize="16"
+                   Padding="5, 5, 0, 5"
+                   Foreground="White"
+                   Style="{StaticResource styleLabel}" />
+
+            <Button Style="{StaticResource styleButton}"
+                    Height="35"
+                    Margin="5"
+                    FontSize="16"
+                    Grid.Row="2"
+                    Command="{Binding AddResponseCommand}"
+                    Content="Add response"
+                    Background="{StaticResource brushYellowOrange}" />
+        </Grid>
+        
+    </Grid>
+</Window>
