@@ -22,8 +22,16 @@ namespace MunicipalityApp
 
     public class IssueDetailsViewModel : BindableBase
     {
+        /****************************************************************/
+        // Variables
+        /****************************************************************/
         #region Variables
 
+        // General
+        private IssueDetailsView view;
+        private bool isBlocked;
+
+        // Main
         private List<BitmapImage> pictures;
         private IssueState issueState;
         private string dateCreated;
@@ -32,22 +40,21 @@ namespace MunicipalityApp
         private string subCategory;
         private string description;
         private ObservableCollection<MunicipalityResponse> municipalityResponses;
-
         private ICommand saveAllChangesCommand;
         private ICommand addResponseCommand;
         private ICommand blockCitizenCommand;
         private SimpleCommand<MunicipalityResponse> deleteResponseCommand;
-
         private ObservableCollection<IssueState> newIssueStates;
         private IssueState selectedNewIssueState;
 
-        private IssueDetailsView view;
+        // Progress
         private string progressMessage;
-
-        private bool isBlocked;
 
         #endregion
 
+        /****************************************************************/
+        // Constructor
+        /****************************************************************/
         #region Constructor
 
         public IssueDetailsViewModel()
@@ -104,13 +111,18 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************************/
+        // Methods
+        /****************************************************************/
         #region Methods
 
+        /****************************************************/
+        // General
+        /****************************************************/
         #region General
 
         public void Init(Issue issue, bool isBlocked)
         {
-           
             Issue = issue;
             IsBlocked = isBlocked;
             LoadValues();
@@ -215,6 +227,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Main
+        /****************************************************/
         #region Main
 
         private void AddResponse()
@@ -360,6 +375,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Progress
+        /****************************************************/
         #region Progress
 
         private void ShowProgress(string progressMessage)
@@ -376,7 +394,15 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************************/
+        // Properties
+        /****************************************************************/
         #region Properties
+
+        /****************************************************/
+        // General
+        /****************************************************/
+        #region General
 
         public IssueDetailsWindow CurrentWindow { get; set; }
         public IssueDetailsView View
@@ -389,8 +415,24 @@ namespace MunicipalityApp
             }
         }
         public bool IsBlocked { get => isBlocked; set => SetValue(ref isBlocked, value); }
+
+        #endregion
+
+        /****************************************************/
+        // Progress
+        /****************************************************/
+        #region Progress
+
         public string ProgressMessage { get => progressMessage; set => SetValue(ref progressMessage, value); }
         public Visibility ProgressVisibility => View == IssueDetailsView.Progress ? Visibility.Visible : Visibility.Hidden;
+
+        #endregion
+
+        /****************************************************/
+        // Main
+        /****************************************************/
+        #region Main
+
         public Visibility MainVisibility => View == IssueDetailsView.Main ? Visibility.Visible : Visibility.Hidden;
         public ObservableCollection<IssueState> NewIssueStates { get => newIssueStates; set => SetValue(ref newIssueStates, value); }
         public Issue Issue { get; set; }
@@ -407,6 +449,8 @@ namespace MunicipalityApp
         public ICommand BlockCitizenCommand { get => blockCitizenCommand; set => SetValue(ref blockCitizenCommand, value); }
         public SimpleCommand<MunicipalityResponse> DeleteResponseCommand { get => deleteResponseCommand; set => SetValue(ref deleteResponseCommand, value); }
         public IssueState SelectedNewIssueState { get => selectedNewIssueState; set => SetValue(ref selectedNewIssueState, value); }
+
+        #endregion
 
         #endregion
     }

@@ -161,25 +161,25 @@ namespace MunicipalityApp.Webservices.WASP
                 () => RestHelper.SendPostRequest($"{MunicipalityControllerPath}LogInMunicipality", body: jsonString));
         }
 
-        public async Task<WASPServiceResponse<WASPResponse<MunicipalityResponse>>> CreateMunicipalityResponse(MunicipalityResponseCreate municipalityResponse)
+        public async Task<WASPServiceResponse<WASPResponse>> CreateMunicipalityResponse(MunicipalityResponseCreate municipalityResponse)
         {
             var jsonString = JsonConvert.SerializeObject(municipalityResponse, Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            return await ActionCallAsync<WASPResponse<MunicipalityResponse>>(
+            return await ActionCallAsync<WASPResponse>(
                 () => RestHelper.SendPostRequest($"{MunicipalityControllerPath}CreateMunicipalityResponse", body: jsonString));
         }
 
-        public async Task<WASPServiceResponse<WASPResponse<MunicipalityResponse>>> UpdateMunicipalityResponse(int municipalityResponseId, List<WASPUpdate> waspUpdates)
+        public async Task<WASPServiceResponse<WASPResponse>> UpdateMunicipalityResponse(int municipalityResponseId, List<WASPUpdate> waspUpdates)
         {
             var jsonString = JsonConvert.SerializeObject(waspUpdates, Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            return await ActionCallAsync<WASPResponse<MunicipalityResponse>>(
+            return await ActionCallAsync<WASPResponse>(
                 () => RestHelper.SendPutRequest($"{MunicipalityControllerPath}UpdateMunicipalityResponse", body: jsonString, restParameters: new List<RestParameter>
                 {
                     new RestParameter("responseId", municipalityResponseId.ToString())
@@ -191,7 +191,7 @@ namespace MunicipalityApp.Webservices.WASP
             return await ActionCallAsync<WASPResponse>(
                 () => RestHelper.SendDeleteRequest($"{MunicipalityControllerPath}DeleteMunicipalityResponse",
                 restParameters: new List<RestParameter>() {
-                    new RestParameter("municipalityResponseId", municipalityResponseId.ToString())
+                    new RestParameter("responseId", municipalityResponseId.ToString())
                 }));
         }
 
@@ -212,6 +212,17 @@ namespace MunicipalityApp.Webservices.WASP
                     new RestParameter("municipalityId", municipalityId.ToString()),
                     new RestParameter("isBlocked", isBlocked.ToString())
                 }));
+        }
+
+        public async Task<WASPServiceResponse<WASPResponse>> SignUpMunicipalityUser(MunicipalityUserSignUp municipalityUser)
+        {
+            var jsonString = JsonConvert.SerializeObject(municipalityUser, Formatting.None, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            return await ActionCallAsync<WASPResponse>(
+                () => RestHelper.SendPostRequest($"{MunicipalityControllerPath}SignUpMunicipality", body: jsonString));
         }
 
         #endregion

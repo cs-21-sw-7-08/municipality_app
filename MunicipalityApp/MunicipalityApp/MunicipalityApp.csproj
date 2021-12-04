@@ -120,6 +120,7 @@
     <Compile Include="Webservices\WASP\Models\SubCategory.cs" />
     <Compile Include="Webservices\WASP\Models\WASPResponse.cs" />
     <Compile Include="Webservices\WASP\Models\WASPUpdate.cs" />
+    <Compile Include="Webservices\WASP\Models\MunicipalityUserSignUp.cs" />
     <Compile Include="Webservices\WASP\Service\WASPService.cs" />
     <Page Include="IssueDetailsWindow.xaml">
       <SubType>Designer</SubType>

@@ -108,7 +108,6 @@
 
         </Grid>
 
-
         <!--Main-->
         <Grid Visibility="{Binding MainViewVisibility}"
               Background="#FF202020">
@@ -552,150 +551,181 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        
-                        <!--Datagrid - Issues with reports-->
-                        <DataGrid BorderBrush="White"
-                                  Background="Transparent"
-                                  CanUserAddRows="False"
-                                  HorizontalContentAlignment="Stretch"
-                                  HorizontalAlignment="Stretch"
-                                  Margin="1"
-                                  VerticalAlignment="Stretch"
-                                  AutoGenerateColumns="False"
-                                  CanUserReorderColumns="False"
-                                  SelectedItem="{Binding SelectedIssueWithReports, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  ItemsSource="{Binding IssuesWithReports}"                                  
-                                  MinRowHeight="35"
-                                  RowHeaderWidth="0"
-                                  CanUserResizeColumns="False"
-                                  CanUserResizeRows="False"
-                                  CanUserSortColumns="False"
-                                  SelectionMode="Single">
-                            <!--Columns-->
-                            <DataGrid.Columns>
-                                <!--ID-->
-                                <DataGridTemplateColumn Header="ID"
-                                                        Width="50">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <!--TextBox - Id-->
-                                            <TextBox Text="{Binding Id}"
-                                                     Margin="1"
-                                                     HorizontalContentAlignment="Center"
-                                                     VerticalContentAlignment="Center"
-                                                     HorizontalAlignment="Stretch"
-                                                     VerticalAlignment="Stretch"
-                                                     IsReadOnly="True"
-                                                     FontWeight="Bold"
-                                                     FontFamily="Calibri"
-                                                     Style="{StaticResource styleTextBoxWaterMark}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <!--Description-->
-                                <DataGridTemplateColumn Header="Description"
-                                                        Width="2*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <!--TextBox - Description-->
-                                            <TextBox Text="{Binding Description}"
-                                                     Margin="1"
-                                                     BorderThickness="0"
-                                                     HorizontalContentAlignment="Center"
-                                                     VerticalContentAlignment="Center"
-                                                     HorizontalAlignment="Stretch"
-                                                     VerticalAlignment="Stretch"
-                                                     IsReadOnly="True"
-                                                     FontWeight="Bold"
-                                                     FontFamily="Calibri"
-                                                     Style="{StaticResource styleTextBoxWaterMark}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <!--See-->
-                                <DataGridTemplateColumn Header="See"
-                                                        Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <!--Button - See details-->
-                                            <Button Foreground="Black"
-                                                    FontSize="14"
-                                                    Background="{StaticResource brushYellowOrange}"
-                                                    Content="See details"
-                                                    Margin="1"
-                                                    HorizontalAlignment="Stretch"
-                                                    VerticalAlignment="Stretch"
-                                                    Grid.Column="0"
-                                                    Command="{Binding SeeIssueDetailsCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource styleButton}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
 
-                        <!--Datagrid - Reports-->
-                        <DataGrid BorderBrush="White"
-                                  Background="Transparent"
-                                  CanUserAddRows="False"
-                                  HorizontalContentAlignment="Stretch"
-                                  HorizontalAlignment="Stretch"
-                                  Margin="1"
-                                  VerticalAlignment="Stretch"
-                                  AutoGenerateColumns="False"
-                                  CanUserReorderColumns="False"                                  
-                                  ItemsSource="{Binding Reports}"
-                                  MinRowHeight="35"
-                                  RowHeaderWidth="0"
-                                  Grid.Column="1"
-                                  CanUserResizeColumns="False"
-                                  CanUserResizeRows="False"
-                                  CanUserSortColumns="False"
-                                  SelectionMode="Single">
-                            <!--Columns-->
-                            <DataGrid.Columns>
-                                <!--Name-->
-                                <DataGridTemplateColumn Header="Category"
-                                                        Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <!--TextBox - Name-->
-                                            <TextBox Text="{Binding ReportCategory.Name}"
-                                                     Margin="1"
-                                                     HorizontalContentAlignment="Center"
-                                                     VerticalContentAlignment="Center"
-                                                     HorizontalAlignment="Stretch"
-                                                     VerticalAlignment="Stretch"
-                                                     IsReadOnly="True"
-                                                     FontWeight="Bold"
-                                                     FontFamily="Calibri"
-                                                     Style="{StaticResource styleTextBoxWaterMark}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <!--Amount-->
-                                <DataGridTemplateColumn Header="Amount"
-                                                        Width="70">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <!--TextBox - Amount-->
-                                            <TextBox Text="{Binding TypeCounter}"
-                                                     Margin="1"
-                                                     BorderThickness="0"
-                                                     HorizontalContentAlignment="Center"
-                                                     VerticalContentAlignment="Center"
-                                                     HorizontalAlignment="Stretch"
-                                                     VerticalAlignment="Stretch"
-                                                     IsReadOnly="True"
-                                                     FontWeight="Bold"
-                                                     FontFamily="Calibri"
-                                                     Style="{StaticResource styleTextBoxWaterMark}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!--Issues-->
+                            <Label Content="Issues with Reports"
+                                   FontSize="16"
+                                   Padding="0, 5, 0, 5"
+                                   Foreground="White"
+                                   Style="{StaticResource styleLabel}" />
+
+                            <!--Datagrid - Issues with reports-->
+                            <DataGrid BorderBrush="White"
+                                      Background="Transparent"
+                                      CanUserAddRows="False"
+                                      Grid.Row="1"
+                                      HorizontalContentAlignment="Stretch"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="1"
+                                      VerticalAlignment="Stretch"
+                                      AutoGenerateColumns="False"
+                                      CanUserReorderColumns="False"
+                                      SelectedItem="{Binding SelectedIssueWithReports, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      ItemsSource="{Binding IssuesWithReports}"
+                                      MinRowHeight="35"
+                                      RowHeaderWidth="0"
+                                      CanUserResizeColumns="False"
+                                      CanUserResizeRows="False"
+                                      CanUserSortColumns="False"
+                                      SelectionMode="Single">
+                                <!--Columns-->
+                                <DataGrid.Columns>
+                                    <!--ID-->
+                                    <DataGridTemplateColumn Header="ID"
+                                                            Width="50">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <!--TextBox - Id-->
+                                                <TextBox Text="{Binding Id}"
+                                                         Margin="1"
+                                                         HorizontalContentAlignment="Center"
+                                                         VerticalContentAlignment="Center"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         IsReadOnly="True"
+                                                         FontWeight="Bold"
+                                                         FontFamily="Calibri"
+                                                         Style="{StaticResource styleTextBoxWaterMark}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <!--Description-->
+                                    <DataGridTemplateColumn Header="Description"
+                                                            Width="2*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <!--TextBox - Description-->
+                                                <TextBox Text="{Binding Description}"
+                                                         Margin="1"
+                                                         BorderThickness="0"
+                                                         HorizontalContentAlignment="Center"
+                                                         VerticalContentAlignment="Center"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         IsReadOnly="True"
+                                                         FontWeight="Bold"
+                                                         FontFamily="Calibri"
+                                                         Style="{StaticResource styleTextBoxWaterMark}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <!--See-->
+                                    <DataGridTemplateColumn Header="See"
+                                                            Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <!--Button - See details-->
+                                                <Button Foreground="Black"
+                                                        FontSize="14"
+                                                        Background="{StaticResource brushYellowOrange}"
+                                                        Content="See details"
+                                                        Margin="1"
+                                                        FontFamily="Calibri"
+                                                        FontWeight="Bold"
+                                                        HorizontalAlignment="Stretch"
+                                                        VerticalAlignment="Stretch"
+                                                        Grid.Column="0"
+                                                        Command="{Binding SeeIssueDetailsCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource styleButton}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!--Reports-->
+                            <Label Content="Reports"
+                                   FontSize="16"
+                                   Padding="0, 5, 0, 5"
+                                   Foreground="White"
+                                   Style="{StaticResource styleLabel}" />
+                            <!--Datagrid - Reports-->
+                            <DataGrid BorderBrush="White"
+                                      Background="Transparent"
+                                      CanUserAddRows="False"
+                                      HorizontalContentAlignment="Stretch"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="1"
+                                      Grid.Row="1"
+                                      VerticalAlignment="Stretch"
+                                      AutoGenerateColumns="False"
+                                      CanUserReorderColumns="False"
+                                      ItemsSource="{Binding Reports}"
+                                      MinRowHeight="35"
+                                      RowHeaderWidth="0"
+                                      Grid.Column="1"
+                                      CanUserResizeColumns="False"
+                                      CanUserResizeRows="False"
+                                      CanUserSortColumns="False"
+                                      SelectionMode="Single">
+                                <!--Columns-->
+                                <DataGrid.Columns>
+                                    <!--Name-->
+                                    <DataGridTemplateColumn Header="Category"
+                                                            Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <!--TextBox - Name-->
+                                                <TextBox Text="{Binding ReportCategory.Name}"
+                                                         Margin="1"
+                                                         HorizontalContentAlignment="Center"
+                                                         VerticalContentAlignment="Center"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         IsReadOnly="True"
+                                                         FontWeight="Bold"
+                                                         FontFamily="Calibri"
+                                                         Style="{StaticResource styleTextBoxWaterMark}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <!--Amount-->
+                                    <DataGridTemplateColumn Header="Amount"
+                                                            Width="70">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <!--TextBox - Amount-->
+                                                <TextBox Text="{Binding TypeCounter}"
+                                                         Margin="1"
+                                                         BorderThickness="0"
+                                                         HorizontalContentAlignment="Center"
+                                                         VerticalContentAlignment="Center"
+                                                         HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Stretch"
+                                                         IsReadOnly="True"
+                                                         FontWeight="Bold"
+                                                         FontFamily="Calibri"
+                                                         Style="{StaticResource styleTextBoxWaterMark}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
 
                     </Grid>
                 </TabItem>
@@ -739,7 +769,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <!--Subcategories-->
+                        <!--Blocked citizens-->
                         <Label Content="Blocked citizens"
                                FontSize="16"
                                Padding="0, 5, 0, 5"
@@ -756,7 +786,7 @@
                                   Margin="1"
                                   VerticalAlignment="Stretch"
                                   AutoGenerateColumns="False"
-                                  CanUserReorderColumns="False"                                  
+                                  CanUserReorderColumns="False"
                                   ItemsSource="{Binding BlockedCitizens}"
                                   MinRowHeight="35"
                                   RowHeaderWidth="0"
@@ -836,6 +866,8 @@
                                                     Background="{StaticResource brushYellowOrange}"
                                                     Content="Unblock"
                                                     Margin="1"
+                                                    FontFamily="Calibri"
+                                                    FontWeight="Bold"
                                                     HorizontalAlignment="Stretch"
                                                     VerticalAlignment="Stretch"
                                                     Grid.Column="0"
@@ -886,6 +918,62 @@
                     </TabItem.Header>
                     <Grid>
 
+                        <StackPanel HorizontalAlignment="Center"
+                                    Width="200"
+                                    VerticalAlignment="Center">
+
+                            <Label Content="Sign up"
+                                   FontSize="30"
+                                   HorizontalContentAlignment="Center"
+                                   Padding="0, 5, 0, 40"
+                                   Foreground="White"
+                                   Style="{StaticResource styleLabel}" />
+
+                            <Label Content="Name"
+                                   FontSize="20"
+                                   Padding="0, 5, 0, 5"
+                                   Foreground="White"
+                                   Style="{StaticResource styleLabel}" />
+
+                            <TextBox Style="{StaticResource styleTextBoxWaterMark}"
+                                     Height="35"
+                                     Padding="5,-1,5,0"
+                                     FontWeight="Bold"
+                                     Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+                            <Label Content="{x:Static p:Resources.username}"
+                                   FontSize="20"
+                                   Padding="0, 5, 0, 5"
+                                   Foreground="White"
+                                   Style="{StaticResource styleLabel}" />
+
+                            <TextBox Style="{StaticResource styleTextBoxWaterMark}"
+                                     Height="35"
+                                     Padding="5,-1,5,0"
+                                     FontWeight="Bold"
+                                     Text="{Binding NewUsername, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+                            <Label Content="{x:Static p:Resources.password}"
+                                   FontSize="20"
+                                   Padding="0, 5, 0, 5"
+                                   Foreground="White"
+                                   Style="{StaticResource styleLabel}" />
+
+                            <TextBox Style="{StaticResource styleTextBoxWaterMark}"
+                                     Height="35"
+                                     Padding="5,-1,5,0"
+                                     FontWeight="Bold"
+                                     Text="{Binding NewPassword, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+
+                            <Button Style="{StaticResource styleButton}"
+                                    Height="35"
+                                    Margin="0, 5, 0, 0"
+                                    FontSize="16"
+                                    Command="{Binding SignUpUserCommand}"
+                                    Content="Sign up"
+                                    Background="{StaticResource brushYellowOrange}" />
+
+                        </StackPanel>
 
                     </Grid>
                 </TabItem>

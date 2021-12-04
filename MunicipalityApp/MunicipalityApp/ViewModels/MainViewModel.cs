@@ -27,6 +27,9 @@ namespace MunicipalityApp
 
     public class MainViewModel : BindableBase
     {
+        /****************************************************************/
+        // Variables
+        /****************************************************************/
         #region Variables
 
         // General
@@ -63,10 +66,16 @@ namespace MunicipalityApp
         private SimpleCommand<Citizen> unblockCitizenCommand;
 
         // Sign up
-
+        private string newUsername;
+        private string newPassword;
+        private string newName;
+        private ICommand signUpUserCommand;
 
         #endregion
 
+        /****************************************************************/
+        // Constructor
+        /****************************************************************/
         #region Constructor
 
         public MainViewModel()
@@ -81,8 +90,14 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************************/
+        // Methods
+        /****************************************************************/
         #region Methods
 
+        /****************************************************/
+        // General
+        /****************************************************/
         #region General
 
         private void Setup()
@@ -129,6 +144,7 @@ namespace MunicipalityApp
             SetupOverview();
             SetupReports();
             SetupBlocked();
+            SetupSignUp();
         }
 
         private void LogOut()
@@ -138,6 +154,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Login
+        /****************************************************/
         #region Login
 
         private void SetupLogin()
@@ -180,6 +199,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Overview
+        /****************************************************/
         #region Overview
 
         private void SetupOverview()
@@ -316,6 +338,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Reports
+        /****************************************************/
         #region Reports
 
         private void SetupReports()
@@ -357,6 +382,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Blocked
+        /****************************************************/
         #region Blocked
 
         private void SetupBlocked()
@@ -416,6 +444,59 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Sign up
+        /****************************************************/
+        #region Sign up
+
+        private void SetupSignUp()
+        {
+            SignUpUserCommand = new SimpleCommand(() =>
+            {
+                SignUpMunicipality();
+            });
+        }
+
+        private void SignUpMunicipality()
+        {
+            if (string.IsNullOrEmpty(NewUsername) || string.IsNullOrEmpty(NewPassword) || string.IsNullOrEmpty(NewName))
+            {
+                GeneralUtil.ShowMessage("Please fill out all fields");
+                return;
+            }
+
+            ShowProgress("Signing up new municipality user...");
+            Task.Run(async () =>
+            {
+                var response = await App.WASPService.SignUpMunicipalityUser(new MunicipalityUserSignUp()
+                {
+                    Email = NewUsername,
+                    Name = NewName,
+                    MunicipalityId = App.MunicipalityUser.MunicipalityId,
+                    Password = NewPassword
+                });
+                if (!response.IsSuccess)
+                {
+                    HideProgress(MainView.Main);
+                    GeneralUtil.ShowMessage(response.ErrorMessage);
+                    return;
+                }
+                GeneralUtil.RunOnUIThread(() =>
+                {
+                    GeneralUtil.ShowMessage("New municipality user signed up");
+                    NewUsername = string.Empty;
+                    NewPassword = string.Empty;
+                    NewName = string.Empty;
+                    HideProgress(MainView.Main);
+                });
+            });
+        }
+
+        #endregion
+
+        /****************************************************/
+        // Progress
+        /****************************************************/
         #region Progress
 
         private void ShowProgress(string progressMessage)
@@ -432,10 +513,16 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************************/
+        // Properties
+        /****************************************************************/
         #region Properties
 
+        /****************************************************/
+        // General
+        /****************************************************/
         #region General
-        
+
         public MainWindow CurrentWindow { get; set; }        
         public Visibility MainViewVisibility => MainView == MainView.Main ? Visibility.Visible : Visibility.Hidden;
         public Visibility LoginViewVisibility => MainView == MainView.Login ? Visibility.Visible : Visibility.Hidden;
@@ -458,6 +545,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Login
+        /****************************************************/
         #region Login
 
         public ICommand LogInCommand { get => loginCommand; set => SetValue(ref loginCommand, value); }
@@ -474,6 +564,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Overview
+        /****************************************************/
         #region Overview
 
         public Map Map => CurrentWindow.mapControl;
@@ -521,6 +614,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Reports
+        /****************************************************/
         #region Reports
 
         public ObservableCollection<Issue> IssuesWithReports { get => issuesWithReports; set => SetValue(ref issuesWithReports, value); }
@@ -538,6 +634,9 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Blocked
+        /****************************************************/
         #region Blocked
 
         public ObservableCollection<Citizen> BlockedCitizens { get => blockedCitizens; set => SetValue(ref blockedCitizens, value); }
@@ -545,6 +644,21 @@ namespace MunicipalityApp
 
         #endregion
 
+        /****************************************************/
+        // Sign up
+        /****************************************************/
+        #region Sign up
+
+        public ICommand SignUpUserCommand { get => signUpUserCommand; set => SetValue(ref signUpUserCommand, value); }
+        public string NewUsername { get => newUsername; set => SetValue(ref newUsername, value); }
+        public string NewPassword { get => newPassword; set => SetValue(ref newPassword, value); }
+        public string NewName { get => newName; set => SetValue(ref newName, value); }
+
+        #endregion
+
+        /****************************************************/
+        // Progress
+        /****************************************************/
         #region Progress
 
         public Visibility ProgressVisibility => MainView == MainView.Progress ? Visibility.Visible : Visibility.Hidden;
