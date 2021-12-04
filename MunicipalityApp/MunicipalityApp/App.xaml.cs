@@ -58,6 +58,7 @@ namespace MunicipalityApp
             };
 
         public static IWASPServiceFunctions WASPService { get; private set; }
+        public static MunicipalityUser MunicipalityUser { get; set; }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {

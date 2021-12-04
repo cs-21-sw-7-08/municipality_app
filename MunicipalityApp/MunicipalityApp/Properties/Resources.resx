@@ -129,6 +129,9 @@
   <data name="getting categories" xml:space="preserve">
     <value>Getting categories...</value>
   </data>
+  <data name="getting issue details" xml:space="preserve">
+    <value>Getting issue details...</value>
+  </data>
   <data name="getting issues" xml:space="preserve">
     <value>Getting issues...</value>
   </data>

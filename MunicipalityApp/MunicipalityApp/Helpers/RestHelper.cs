@@ -145,7 +145,7 @@ namespace MunicipalityApp
         public async Task<RestResponse> SendPutRequest(string function, string body = null, List<RestParameter> restParameters = null)
         {
             var urlComplete = Url + function + GetParametersAsString(restParameters);
-            return await MakeRequest(async () => await Client.PostAsync(
+            return await MakeRequest(async () => await Client.PutAsync(
                         urlComplete,
                         new StringContent(body == null ? "" : body, Encoding.UTF8, "application/json")
                     )

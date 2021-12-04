@@ -4,11 +4,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MunicipalityApp"
+        xmlns:converters="clr-namespace:MunicipalityApp.Converters"
+        xmlns:wasp="clr-namespace:MunicipalityApp.Webservices.WASP"
+        xmlns:wpf="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
         xmlns:p="clr-namespace:MunicipalityApp.Properties"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Background="#FF202020"
-        Title="IssueDetailsWindow" Height="450" Width="800">
+        Title="Issue Details"
+        ResizeMode="CanMinimize"
+        Height="500"
+        UseLayoutRounding="True"
+        Width="800">
+
+    <Window.Resources>
+        <converters:BoolToStringConverter x:Key="boolToStringBlockUnblock"
+                                          TrueString="Unblock citizen"
+                                          FalseString="Block citizen" />
+    </Window.Resources>
 
     <!--View model-->
     <Window.DataContext>
@@ -16,76 +29,352 @@
     </Window.DataContext>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <!--Progress-->
+        <Grid x:Name="gridProgress"
+              Visibility="{Binding ProgressVisibility}">
+            <StackPanel Width="200"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <Label Content="{Binding ProgressMessage}"
+                       FontSize="16"
+                       HorizontalContentAlignment="Center"
+                       Padding="0, 5, 0, 10"
+                       Foreground="White"
+                       Style="{StaticResource styleLabel}" />
+                <ProgressBar IsIndeterminate="True"
+                             Height="35"
+                             Foreground="Orange" />
+            </StackPanel>
+        </Grid>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            
-            <StackPanel>
-                <Label Content="Status"
+        <!--Main-->
+        <Grid Visibility="{Binding MainVisibility}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Label Content="Status"
+                           FontSize="16"
+                           Padding="5, 5, 0, 5"
+                           Foreground="White"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Content="{Binding IssueState.Name}"
+                               FontSize="12"
+                               Grid.Row="2"
+                               Padding="5, 5, 0, 5"
+                               Foreground="#FFA0A0A0"
+                               Style="{StaticResource styleLabel}" />
+
+                        <ComboBox Style="{StaticResource styleComboBox}"
+                                  Grid.Column="1"
+                                  BorderBrush="Black"
+                                  Margin="1"
+                                  Tag="New status"
+                                  ItemsSource="{Binding NewIssueStates}"
+                                  DisplayMemberPath="Name"
+                                  SelectedItem="{Binding SelectedNewIssueState}"
+                                  Background="{StaticResource brushYellowOrange}"
+                                  Foreground="Black" />
+
+                    </Grid>
+
+                    <Label Content="Created"
+                           FontSize="16"
+                           Grid.Row="3"
+                           Padding="5, 5, 0, 5"
+                           Foreground="White"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="{Binding DateCreated}"
+                           FontSize="12"
+                           Grid.Row="4"
+                           Padding="5, 5, 0, 5"
+                           Foreground="#FFA0A0A0"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="Edited"
+                           FontSize="16"
+                           Grid.Row="5"
+                           Padding="5, 5, 0, 5"
+                           Foreground="White"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="{Binding DateEdited}"
+                           FontSize="12"
+                           Grid.Row="6"
+                           Padding="5, 5, 0, 5"
+                           Foreground="#FFA0A0A0"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="Category"
+                           FontSize="16"
+                           Grid.Row="7"
+                           Padding="5, 5, 0, 5"
+                           Foreground="White"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="{Binding Category}"
+                           FontSize="12"
+                           Grid.Row="8"
+                           Padding="5, 5, 0, 5"
+                           Foreground="#FFA0A0A0"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="{Binding SubCategory}"
+                           FontSize="12"
+                           Grid.Row="9"
+                           Padding="5, 5, 0, 5"
+                           Foreground="#FFA0A0A0"
+                           Style="{StaticResource styleLabel}" />
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Content="Description"
+                           FontSize="16"
+                           Padding="5, 5, 0, 5"
+                           Foreground="White"
+                           Style="{StaticResource styleLabel}" />
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+                        <TextBlock Text="{Binding Description}"
+                                   FontSize="14"
+                                   FontFamily="Calibri"
+                                   FontWeight="Bold"
+                                   TextWrapping="WrapWithOverflow"
+                                   Padding="5, 5, 0, 5"
+                                   Foreground="#FFA0A0A0" />
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Label Content="Pictures"
                        FontSize="16"
                        Padding="5, 5, 0, 5"
                        Foreground="White"
                        Style="{StaticResource styleLabel}" />
-            </StackPanel>
 
-            <StackPanel Grid.Row="1">
-                <Label Content="Description"
+                <ListBox BorderBrush="White"
+                         BorderThickness="1"
+                         Background="Transparent"
+                         Grid.Row="1"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         Margin="2"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         HorizontalContentAlignment="Stretch"
+                         ItemsSource="{Binding Pictures}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem"
+                               BasedOn="{StaticResource styleNoHover}" />
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.Resources>
+                        <ResourceDictionary>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius"
+                                        Value="5" />
+                            </Style>
+
+                            <!--BitmapImage-->
+                            <DataTemplate DataType="{x:Type BitmapImage}">
+                                <Border Margin="0"
+                                        Background="Transparent"
+                                        CornerRadius="5"
+                                        BorderThickness="0"
+                                        BorderBrush="Black">
+                                    <Grid TextOptions.TextFormattingMode="Ideal"
+                                          Margin="5">
+
+                                        <Image Source="{Binding}"
+                                               Stretch="Uniform"
+                                               RenderOptions.BitmapScalingMode="HighQuality"
+                                               MaxHeight="300"
+                                               HorizontalAlignment="Center" />
+
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ResourceDictionary>
+
+
+                    </ListBox.Resources>
+                </ListBox>
+            </Grid>
+
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label Content="Responses"
                        FontSize="16"
                        Padding="5, 5, 0, 5"
                        Foreground="White"
                        Style="{StaticResource styleLabel}" />
 
-                <Label Content="{Binding Description}"
-                       FontSize="14"
-                       Padding="5, 5, 0, 5"
-                       Foreground="#FFE0E0E0"                      
-                       Style="{StaticResource styleLabel}" />
-            </StackPanel>
+                <ListBox BorderBrush="White"
+                         BorderThickness="1"
+                         Background="Transparent"
+                         Grid.Row="1"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         Margin="2"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         HorizontalContentAlignment="Stretch"
+                         ItemsSource="{Binding MunicipalityResponses}">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem"
+                               BasedOn="{StaticResource styleNoHover}" />
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.Resources>
+                        <ResourceDictionary>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius"
+                                        Value="5" />
+                            </Style>
+
+                            <!--BitmapImage-->
+                            <DataTemplate DataType="{x:Type wasp:MunicipalityResponse}">
+                                <Border Margin="0"
+                                        Background="Transparent"
+                                        CornerRadius="5"
+                                        BorderThickness="0"
+                                        BorderBrush="Black">
+                                    <Grid TextOptions.TextFormattingMode="Ideal"
+                                          Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border CornerRadius="5"
+                                                Background="White">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+
+                                                <Label Content="{Binding Date}"
+                                                       FontSize="12"
+                                                       HorizontalContentAlignment="Right"
+                                                       Padding="5, 5, 5, 0"
+                                                       Foreground="#FF505050"
+                                                       Style="{StaticResource styleLabel}" />
+
+                                                <TextBox Style="{StaticResource styleTextBoxWaterMark}"
+                                                         Padding="5"
+                                                         Grid.Row="1"
+                                                         MinHeight="100"
+                                                         Height="Auto"
+                                                         VerticalContentAlignment="Top"
+                                                         TextWrapping="WrapWithOverflow"
+                                                         FontWeight="Bold"
+                                                         Text="{Binding Response, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                            </Grid>
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1">
+
+                                            <Button Style="{StaticResource styleScaleButton}"
+                                                    Height="35"
+                                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                                    Margin="5, 0, 0, 0"
+                                                    Padding="5"
+                                                    FontSize="16"
+                                                    Grid.Row="2"
+                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding DeleteResponseCommand}"
+                                                    Background="{StaticResource brushYellowOrange}">
+                                                <wpf:MaterialIcon Kind="DeleteOutline"
+                                                                  VerticalAlignment="Center"
+                                                                  HorizontalAlignment="Center"
+                                                                  Width="30"
+                                                                  Foreground="Black"
+                                                                  Grid.Row="1"
+                                                                  Height="30" />
+                                            </Button>
+
+                                        </StackPanel>
+
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ResourceDictionary>
+
+
+                    </ListBox.Resources>
+                </ListBox>
+
+                <Button Style="{StaticResource styleButton}"
+                        Height="35"
+                        Margin="2, 2, 2, 2"
+                        FontSize="16"
+                        Grid.Row="2"
+                        Command="{Binding AddResponseCommand}"
+                        Content="Add response"
+                        Background="{StaticResource brushYellowOrange}" />
+
+                <Button Style="{StaticResource styleButton}"
+                        Height="35"
+                        Margin="2"
+                        FontSize="16"
+                        Grid.Row="3"
+                        Command="{Binding BlockCitizenCommand}"
+                        Content="{Binding IsBlocked, Converter={StaticResource boolToStringBlockUnblock}}"
+                        Background="{StaticResource brushYellowOrange}" />
+
+                <Button Style="{StaticResource styleButton}"
+                        Height="35"
+                        Margin="2"
+                        FontSize="16"
+                        Grid.Row="4"
+                        Command="{Binding SaveAllChangesCommand}"
+                        Content="Save all changes"
+                        Background="{StaticResource brushYellowOrange}" />
+            </Grid>
+
         </Grid>
-
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <Label Content="Pictures"
-                   FontSize="16"
-                   Padding="5, 5, 0, 5"
-                   Foreground="White"
-                   Style="{StaticResource styleLabel}" />
-        </Grid>
-
-        <Grid Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Label Content="Responses"
-                   FontSize="16"
-                   Padding="5, 5, 0, 5"
-                   Foreground="White"
-                   Style="{StaticResource styleLabel}" />
-
-            <Button Style="{StaticResource styleButton}"
-                    Height="35"
-                    Margin="5"
-                    FontSize="16"
-                    Grid.Row="2"
-                    Command="{Binding AddResponseCommand}"
-                    Content="Add response"
-                    Background="{StaticResource brushYellowOrange}" />
-        </Grid>
-        
     </Grid>
 </Window>

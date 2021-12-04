@@ -97,6 +97,15 @@ namespace MunicipalityApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting issue details....
+        /// </summary>
+        public static string getting_issue_details {
+            get {
+                return ResourceManager.GetString("getting issue details", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Getting issues....
         /// </summary>
         public static string getting_issues {

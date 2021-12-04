@@ -117,7 +117,7 @@ namespace MunicipalityApp.Webservices.WASP
         public async Task<WASPServiceResponse<WASPResponse<Issue>>> GetIssueDetails(int issueId)
         {
             return await ActionCallAsync<WASPResponse<Issue>>(
-                () => RestHelper.SendPutRequest($"{CitizenControllerPath}BlockCitizen",
+                () => RestHelper.SendGetRequest($"{IssueControllerPath}GetIssueDetails",
                 restParameters: new List<RestParameter>() {
                     new RestParameter("issueId", issueId.ToString())
                 }));
@@ -137,7 +137,7 @@ namespace MunicipalityApp.Webservices.WASP
         public async Task<WASPServiceResponse<WASPResponse>> UpdateIssueStatus(int issueId, int issueStateId)
         {
             return await ActionCallAsync<WASPResponse>(
-                () => RestHelper.SendPutRequest($"{CitizenControllerPath}BlockCitizen",
+                () => RestHelper.SendPutRequest($"{IssueControllerPath}UpdateIssueStatus",
                 restParameters: new List<RestParameter>() {
                     new RestParameter("issueId", issueId.ToString()),
                     new RestParameter("issueStateId", issueStateId.ToString())
@@ -182,7 +182,7 @@ namespace MunicipalityApp.Webservices.WASP
             return await ActionCallAsync<WASPResponse<MunicipalityResponse>>(
                 () => RestHelper.SendPutRequest($"{MunicipalityControllerPath}UpdateMunicipalityResponse", body: jsonString, restParameters: new List<RestParameter>
                 {
-                    new RestParameter("municipalityReponseId", municipalityResponseId.ToString())
+                    new RestParameter("responseId", municipalityResponseId.ToString())
                 }));
         }
 
@@ -192,6 +192,25 @@ namespace MunicipalityApp.Webservices.WASP
                 () => RestHelper.SendDeleteRequest($"{MunicipalityControllerPath}DeleteMunicipalityResponse",
                 restParameters: new List<RestParameter>() {
                     new RestParameter("municipalityResponseId", municipalityResponseId.ToString())
+                }));
+        }
+
+        public async Task<WASPServiceResponse<WASPResponse<List<Issue>>>> GetListOfReports(int municipalityId)
+        {
+            return await ActionCallAsync<WASPResponse<List<Issue>>>(
+                () => RestHelper.SendGetRequest($"{IssueControllerPath}GetListOfReports", restParameters: new List<RestParameter>
+                {
+                    new RestParameter("municipalityId", municipalityId.ToString())
+                }));
+        }
+
+        public async Task<WASPServiceResponse<WASPResponse<List<Citizen>>>> GetListOfCitizens(int municipalityId, bool isBlocked)
+        {
+            return await ActionCallAsync<WASPResponse<List<Citizen>>>(
+                () => RestHelper.SendGetRequest($"{CitizenControllerPath}GetListOfCitizens", restParameters: new List<RestParameter>
+                {
+                    new RestParameter("municipalityId", municipalityId.ToString()),
+                    new RestParameter("isBlocked", isBlocked.ToString())
                 }));
         }
 

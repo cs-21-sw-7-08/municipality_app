@@ -83,7 +83,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\SimpleCommand.cs" />
     <Compile Include="Converters\BitmapToSourceConverter.cs" />
+    <Compile Include="Converters\BoolToStringConverter.cs" />
+    <Compile Include="Converters\DisabledColorConverter.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Helpers\RestHelper.cs" />
     <Compile Include="IssueDetailsWindow.xaml.cs">
@@ -106,9 +109,13 @@
     <Compile Include="Webservices\WASP\Models\MunicipalityUser.cs" />
     <Compile Include="Webservices\WASP\Models\MunicipalityUserLogin.cs" />
     <Compile Include="Webservices\WASP\Models\Partials\Category.cs" />
+    <Compile Include="Webservices\WASP\Models\Partials\Citizen.cs" />
+    <Compile Include="Webservices\WASP\Models\Partials\Issue.cs" />
     <Compile Include="Webservices\WASP\Models\Partials\IssueState.cs" />
+    <Compile Include="Webservices\WASP\Models\Partials\MunicipalityResponse.cs" />
     <Compile Include="Webservices\WASP\Models\Partials\SubCategory.cs" />
     <Compile Include="Objects\SubCategoryGroupHeader.cs" />
+    <Compile Include="Webservices\WASP\Models\Report.cs" />
     <Compile Include="Webservices\WASP\Models\ReportCategory.cs" />
     <Compile Include="Webservices\WASP\Models\SubCategory.cs" />
     <Compile Include="Webservices\WASP\Models\WASPResponse.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MunicipalityApp.Webservices.WASP
 {
-    public class Issue
+    public partial class Issue
     {
         public int Id { get; set; }
         public int CitizenId { get; set; }
@@ -24,5 +24,7 @@ namespace MunicipalityApp.Webservices.WASP
         public IssueState IssueState { get; set; }
         public List<MunicipalityResponse> MunicipalityResponses { get; set; }
         public List<int> IssueVerificationCitizenIds { get; set; }
+        public List<Report> Reports { get; set; }
+        public Citizen Citizen { get; set; }
     }
 }

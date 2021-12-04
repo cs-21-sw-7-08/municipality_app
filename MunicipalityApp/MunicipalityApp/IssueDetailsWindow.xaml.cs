@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MunicipalityApp.Webservices.WASP;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,14 @@ namespace MunicipalityApp
     /// </summary>
     public partial class IssueDetailsWindow : Window
     {
-        public IssueDetailsWindow()
+        public IssueDetailsWindow(Issue issue, bool isBlocked)
         {
             InitializeComponent();
+
+            ViewModel.CurrentWindow = this;
+            ViewModel.Init(issue, isBlocked);
         }
+
+        public IssueDetailsViewModel ViewModel { get => DataContext as IssueDetailsViewModel; set => DataContext = value; }
     }
 }

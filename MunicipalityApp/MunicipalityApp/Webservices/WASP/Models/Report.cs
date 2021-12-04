@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace MunicipalityApp.Webservices.WASP
 {
-    public partial class MunicipalityResponse
+    public class Report
     {
         public int Id { get; set; }
         public int IssueId { get; set; }
-        public int MunicipalityUserId { get; set; }
-        public string Response { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime? DateEdited { get; set; }
+        public int ReportCategoryId { get; set; }
+        public int TypeCounter { get; set; }
+        public ReportCategory ReportCategory { get; set; }
+
     }
 }

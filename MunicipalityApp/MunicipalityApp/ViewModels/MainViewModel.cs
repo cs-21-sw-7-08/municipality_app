@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.Maps.MapControl.WPF;
+using MunicipalityApp.Commands;
 using MunicipalityApp.Webservices.WASP;
 using System;
 using System.Collections.Generic;
@@ -39,8 +40,7 @@ namespace MunicipalityApp
         // Login
         private string username;
         private string password;
-        private ICommand loginCommand;
-        private MunicipalityUser municipalityUser;
+        private ICommand loginCommand;        
 
         // Overview
         private IssuesOverviewFilter issueFilter;
@@ -48,14 +48,19 @@ namespace MunicipalityApp
         private ObservableCollection<IssueState> issueStates;
         private ObservableCollection<Category> categories;
         private ObservableCollection<Category> subCategories;
+        private bool isBlocked;
         private RelayCommand<Category> categoryCheckedChangedCommand;
         private ICommand applyFilterCommand;
 
         // Reports
-
+        private ObservableCollection<Issue> issuesWithReports;
+        private ObservableCollection<Report> reports;
+        private SimpleCommand<Issue> seeIssueDetailsCommand;
+        private Issue selectedIssueWithReports;
 
         // Blocked
-
+        private ObservableCollection<Citizen> blockedCitizens;
+        private SimpleCommand<Citizen> unblockCitizenCommand;
 
         // Sign up
 
@@ -68,62 +73,10 @@ namespace MunicipalityApp
         {            
             MainView = MainView.Login;
 
-            Setup();
-
-
-            Categories = new ObservableCollection<Category>()
-            {
-                new Category()
-                {
-                    Id = 1,
-                    Name = "Test",
-                    IsSelected = true,
-                    SubCategories = new List<SubCategory>()
-                    {
-                        new SubCategory()
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Name = "Test",
-                            IsSelected = false
-                        },
-                        new SubCategory()
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Name = "Test",
-                            IsSelected = true
-                        }
-                    }
-                },
-                new Category()
-                {
-                    Id = 2,
-                    Name = "Test",
-                    IsSelected = false,
-                    SubCategories = new List<SubCategory>()
-                    {
-                        new SubCategory()
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Name = "Test",
-                            IsSelected = false
-                        },
-                        new SubCategory()
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            Name = "Test",
-                            IsSelected = true
-                        }
-                    }
-                }
-            };
-
             Username = "grete@aalborg.dk";
             Password = "12345678";
-            ProgressMessage = Resources.logging_in;
+
+            Setup();
         }
 
         #endregion
@@ -162,12 +115,20 @@ namespace MunicipalityApp
                             tabControl.SelectedItem = CurrentWindow.tbRoot.Items[1];
                         }
                         break;
+                    case 2:
+                        GetReports();
+                        break;
+                    case 3:
+                        GetBlockedCitizens();
+                        break;
                 }
                 args.Handled = true;
             });
 
             SetupLogin();
             SetupOverview();
+            SetupReports();
+            SetupBlocked();
         }
 
         private void LogOut()
@@ -207,7 +168,8 @@ namespace MunicipalityApp
                     GeneralUtil.ShowMessage(response.ErrorMessage);
                     return;
                 }
-                MunicipalityUser = response.WASPResponse.Result;
+                App.MunicipalityUser = response.WASPResponse.Result;
+                IssueFilter.MunicipalityIds = new List<int> { App.MunicipalityUser.MunicipalityId };
                 HideProgress(MainView.Main);
                 GeneralUtil.RunOnUIThread(() =>
                 {
@@ -222,6 +184,7 @@ namespace MunicipalityApp
 
         private void SetupOverview()
         {
+            IsBlocked = false;
             IssueStates = new ObservableCollection<IssueState>()
             {
                 new IssueState()
@@ -252,7 +215,7 @@ namespace MunicipalityApp
 
             IssueFilter = new IssuesOverviewFilter()
             {
-                IsBlocked = false,
+                IsBlocked = IsBlocked,
                 IssueStateIds = IssueStates.Where(x => x.IsSelected).Select(x => x.Id).ToList()
             };
 
@@ -280,16 +243,11 @@ namespace MunicipalityApp
                                                       .ToList();
                 IssueFilter.CategoryIds = tempCategoryIds.Count == 0 ? null : tempCategoryIds;
                 IssueFilter.SubCategoryIds = tempSubCategoryIds.Count == 0 ? null : tempSubCategoryIds;
+                IssueFilter.IsBlocked = IsBlocked;
                 GetListOfIssues();
             });
         }
-
-        private void PushPin_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Pushpin pin = sender as Pushpin;
-
-            GeneralUtil.ShowMessage(pin.Location.ToString());
-        }
+        
         private void GetListOfIssues(bool getCategories = false)
         {
             ShowProgress(Resources.getting_issues);
@@ -308,6 +266,30 @@ namespace MunicipalityApp
                     HideProgress(MainView.Main);
                     if (getCategories)
                         GetListOfCategories();
+                });
+            });
+        }
+        private void GetIssueDetails(Issue issue, bool isBlocked, Action closedAction)
+        {
+            ShowProgress(Resources.getting_issue_details);
+            Task.Run(async () =>
+            {
+                var response = await App.WASPService.GetIssueDetails(issue.Id);
+                if (!response.IsSuccess)
+                {
+                    HideProgress(MainView.Main);
+                    GeneralUtil.ShowMessage(response.ErrorMessage);
+                    return;
+                }
+                GeneralUtil.RunOnUIThread(() =>
+                {
+                    HideProgress(MainView.Main);
+                    IssueDetailsWindow issueDetailsWindow = new IssueDetailsWindow(response.WASPResponse.Result, isBlocked);
+                    issueDetailsWindow.Closed += (sender, args) =>
+                    {
+                        closedAction();
+                    };
+                    issueDetailsWindow.ShowDialog();
                 });
             });
         }
@@ -334,6 +316,106 @@ namespace MunicipalityApp
 
         #endregion
 
+        #region Reports
+
+        private void SetupReports()
+        {
+            SeeIssueDetailsCommand = new SimpleCommand<Issue>((issue) =>
+            {
+                GetIssueDetails(issue, issue.Citizen.IsBlocked, () =>
+                {
+                    GetReports();
+                });
+            });
+        }
+        private void GetReports()
+        {
+            ShowProgress("Getting reports...");
+            Task.Run(async () =>
+            {
+                var response = await App.WASPService.GetListOfReports(App.MunicipalityUser.MunicipalityId);
+                if (!response.IsSuccess)
+                {
+                    HideProgress(MainView.Main);
+                    GeneralUtil.ShowMessage(response.ErrorMessage);
+                    return;
+                }
+
+                GeneralUtil.RunOnUIThread(() =>
+                {
+                    Reports = null;
+                    SelectedIssueWithReports = null;
+                    IssuesWithReports = response.WASPResponse.Result.ToObservableCollection();
+                    foreach (var item in IssuesWithReports)
+                    {
+                        item.SeeIssueDetailsCommand = SeeIssueDetailsCommand;
+                    }
+                    HideProgress(MainView.Main);                    
+                });
+            });
+        }
+
+        #endregion
+
+        #region Blocked
+
+        private void SetupBlocked()
+        {
+            UnblockCitizenCommand = new SimpleCommand<Citizen>((citizen) =>
+            {
+                UnblockCitizen(citizen);
+            });
+        }
+
+        private void GetBlockedCitizens()
+        {
+            ShowProgress("Getting blocked citizens...");
+            Task.Run(async () =>
+            {
+                var response = await App.WASPService.GetListOfCitizens(App.MunicipalityUser.MunicipalityId, true);
+                if (!response.IsSuccess)
+                {
+                    HideProgress(MainView.Main);
+                    GeneralUtil.ShowMessage(response.ErrorMessage);
+                    return;
+                }
+                GeneralUtil.RunOnUIThread(() =>
+                {
+                    BlockedCitizens = response.WASPResponse.Result.ToObservableCollection();
+                    foreach(var item in BlockedCitizens)
+                    {
+                        item.UnblockCitizenCommand = UnblockCitizenCommand;
+                    }                    
+                    HideProgress(MainView.Main);
+                });
+            });
+        }
+
+        private void UnblockCitizen(Citizen citizen)
+        {
+            if (MessageBox.Show("Are you sure you want to unblock this citizen?", "Unblock citizen", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                return;
+
+            ShowProgress("Unblocking citizen...");
+            Task.Run(async () =>
+            {
+                var response = await App.WASPService.UnblockCitizen(citizen.Id);
+                if (!response.IsSuccess)
+                {
+                    HideProgress(MainView.Main);
+                    GeneralUtil.ShowMessage(response.ErrorMessage);
+                    return;
+                }
+                GeneralUtil.RunOnUIThread(() =>
+                {
+                    HideProgress(MainView.Main);
+                    GetBlockedCitizens();     
+                });
+            });
+        }
+
+        #endregion
+
         #region Progress
 
         private void ShowProgress(string progressMessage)
@@ -353,15 +435,7 @@ namespace MunicipalityApp
         #region Properties
 
         #region General
-
-        public MunicipalityUser MunicipalityUser
-        {
-            get => municipalityUser; set
-            {
-                municipalityUser = value;
-                IssueFilter.MunicipalityIds = new List<int> { municipalityUser.MunicipalityId };
-            }
-        }
+        
         public MainWindow CurrentWindow { get; set; }        
         public Visibility MainViewVisibility => MainView == MainView.Main ? Visibility.Visible : Visibility.Hidden;
         public Visibility LoginViewVisibility => MainView == MainView.Login ? Visibility.Visible : Visibility.Hidden;
@@ -419,7 +493,10 @@ namespace MunicipalityApp
                     var location = issue.Location;
                     pushPin.Location = new Maps.Location(location.Latitude, location.Longitude);
                     pushPin.Background = issue.IssueState.StateColor;
-                    pushPin.MouseLeftButtonDown += PushPin_MouseDown;
+                    pushPin.MouseLeftButtonDown += (sender, args) =>
+                    {
+                        GetIssueDetails(issue, IsBlocked, () => GetListOfIssues());
+                    };
                     Map.Children.Add(pushPin);
                 }
             }
@@ -440,6 +517,31 @@ namespace MunicipalityApp
         public ObservableCollection<Category> SubCategories { get => subCategories; set => SetValue(ref subCategories, value); }
         public RelayCommand<Category> CategoryCheckedChangedCommand { get => categoryCheckedChangedCommand; set => SetValue(ref categoryCheckedChangedCommand, value); }
         public ICommand ApplyFilterCommand { get => applyFilterCommand; set => SetValue(ref applyFilterCommand, value); }
+        public bool IsBlocked { get => isBlocked; set => SetValue(ref isBlocked, value); }
+
+        #endregion
+
+        #region Reports
+
+        public ObservableCollection<Issue> IssuesWithReports { get => issuesWithReports; set => SetValue(ref issuesWithReports, value); }
+        public ObservableCollection<Report> Reports { get => reports; set => SetValue(ref reports, value); }
+        public SimpleCommand<Issue> SeeIssueDetailsCommand { get => seeIssueDetailsCommand; set => SetValue(ref seeIssueDetailsCommand, value); }
+        public Issue SelectedIssueWithReports { get => selectedIssueWithReports; set
+            {
+                SetValue(ref selectedIssueWithReports, value);
+                if (SelectedIssueWithReports != null)
+                {
+                    Reports = SelectedIssueWithReports.Reports.ToObservableCollection();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Blocked
+
+        public ObservableCollection<Citizen> BlockedCitizens { get => blockedCitizens; set => SetValue(ref blockedCitizens, value); }
+        public SimpleCommand<Citizen> UnblockCitizenCommand { get => unblockCitizenCommand; set => SetValue(ref unblockCitizenCommand, value); }
 
         #endregion
 
