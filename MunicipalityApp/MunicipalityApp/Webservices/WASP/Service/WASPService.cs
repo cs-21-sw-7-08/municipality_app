@@ -51,7 +51,7 @@ namespace MunicipalityApp.Webservices.WASP
     {
         #region Variables
 
-        const string IssueControllerPath = "/WASP/Issues/";
+        const string IssueControllerPath = "/WASP/Issue/";
         const string MunicipalityControllerPath = "/WASP/Municipality/";
         const string CitizenControllerPath = "/WASP/Citizen/";
 
