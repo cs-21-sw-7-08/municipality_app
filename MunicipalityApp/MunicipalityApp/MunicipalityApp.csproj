@@ -93,6 +93,7 @@
       <DependentUpon>IssueDetailsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Objects\BindableBase.cs" />
+    <Compile Include="Objects\CustomWindow.cs" />
     <Compile Include="Utilities\GeneralUtil.cs" />
     <Compile Include="ViewModels\IssueDetailsViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -114,7 +115,6 @@
     <Compile Include="Webservices\WASP\Models\Partials\IssueState.cs" />
     <Compile Include="Webservices\WASP\Models\Partials\MunicipalityResponse.cs" />
     <Compile Include="Webservices\WASP\Models\Partials\SubCategory.cs" />
-    <Compile Include="Objects\SubCategoryGroupHeader.cs" />
     <Compile Include="Webservices\WASP\Models\Report.cs" />
     <Compile Include="Webservices\WASP\Models\ReportCategory.cs" />
     <Compile Include="Webservices\WASP\Models\SubCategory.cs" />
@@ -170,7 +170,7 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\icon_cross.png" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

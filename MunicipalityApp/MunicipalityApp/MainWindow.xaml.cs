@@ -19,11 +19,11 @@ namespace MunicipalityApp
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : CustomWindow
     {
         public MainWindow()
         {
-            InitializeComponent();
+            InitializeComponent();            
             ViewModel.CurrentWindow = this;
 
             pbLogin.Password = ViewModel.Password;

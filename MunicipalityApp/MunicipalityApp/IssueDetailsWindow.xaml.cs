@@ -18,7 +18,7 @@ namespace MunicipalityApp
     /// <summary>
     /// Interaction logic for IssueDetailsWindow.xaml
     /// </summary>
-    public partial class IssueDetailsWindow : Window
+    public partial class IssueDetailsWindow : CustomWindow
     {
         public IssueDetailsWindow(Issue issue, bool isBlocked)
         {

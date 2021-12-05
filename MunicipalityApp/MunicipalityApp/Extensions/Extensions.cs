@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -32,5 +33,51 @@ namespace MunicipalityApp
         }
 
         public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> enumeration) => new ObservableCollection<T>(enumeration);
+    }
+
+    public static class CustomWindowExtensions
+    {
+        public static void SetupCustomWindow(this Window window)
+        {
+            window.CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, (sender, e) => window.Close()));
+            window.CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand,
+                (sender, e) =>
+                {
+                    SystemCommands.MaximizeWindow(window);
+                },
+                (sender, e) =>
+                {
+                    e.CanExecute = window.ResizeMode == ResizeMode.CanResize || window.ResizeMode == ResizeMode.CanResizeWithGrip;
+                }));
+            window.CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand,
+                (sender, e) =>
+                {
+                    SystemCommands.MinimizeWindow(window);
+                },
+                (sender, e) =>
+                {
+                    e.CanExecute = window.ResizeMode != ResizeMode.NoResize;
+                }));
+            window.CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand,
+                (sender, e) =>
+                {
+                    SystemCommands.RestoreWindow(window);
+                },
+                (sender, e) =>
+                {
+                    e.CanExecute = window.ResizeMode == ResizeMode.CanResize || window.ResizeMode == ResizeMode.CanResizeWithGrip;
+                }));
+            window.CommandBindings.Add(new CommandBinding(SystemCommands.ShowSystemMenuCommand, (sender, e) =>
+            {
+                var element = e.OriginalSource as FrameworkElement;
+                if (element == null)
+                    return;
+
+                var point = window.WindowState == WindowState.Maximized ? new System.Windows.Point(0, element.ActualHeight)
+                    : new System.Windows.Point(window.Left + window.BorderThickness.Left, element.ActualHeight + window.Top + window.BorderThickness.Top);
+                point = element.TransformToAncestor(window).Transform(point);
+                SystemCommands.ShowSystemMenu(window, point);
+            }));
+        }
     }
 }

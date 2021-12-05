@@ -115,16 +115,6 @@ namespace MunicipalityApp.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap icon_cross {
-            get {
-                object obj = ResourceManager.GetObject("icon_cross", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Log in.
         /// </summary>
         public static string log_in {
