@@ -73,6 +73,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Label Content="Status"
                            FontSize="16"
@@ -151,6 +153,20 @@
                     <Label Content="{Binding SubCategory}"
                            FontSize="12"
                            Grid.Row="9"
+                           Padding="5, 5, 0, 5"
+                           Foreground="#FFA0A0A0"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="Number of Verifications"
+                           FontSize="16"
+                           Grid.Row="10"
+                           Padding="5, 5, 0, 5"
+                           Foreground="White"
+                           Style="{StaticResource styleLabel}" />
+
+                    <Label Content="{Binding NumberOfVerifications}"
+                           FontSize="12"
+                           Grid.Row="11"
                            Padding="5, 5, 0, 5"
                            Foreground="#FFA0A0A0"
                            Style="{StaticResource styleLabel}" />

@@ -1350,7 +1350,7 @@
             <Setter Property="BorderBrush"
                     Value="{StaticResource brushYellowOrange}" />
             <Setter Property="BorderThickness"
-                    Value="1" />
+                    Value="0,1,0,0" />
             <Setter Property="IsTabStop"
                     Value="False" />
             <Setter Property="ResizeMode"
@@ -1401,6 +1401,7 @@
                                            Grid.Column="0"
                                            Grid.ColumnSpan="3"
                                            FontSize="14"
+                                           FontWeight="Bold"
                                            HorizontalContentAlignment="Center"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"

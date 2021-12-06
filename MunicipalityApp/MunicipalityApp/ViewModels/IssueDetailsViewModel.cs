@@ -39,6 +39,7 @@ namespace MunicipalityApp
         private string category;
         private string subCategory;
         private string description;
+        private int numberOfVerifications;
         private ObservableCollection<MunicipalityResponse> municipalityResponses;
         private ICommand saveAllChangesCommand;
         private ICommand addResponseCommand;
@@ -59,6 +60,8 @@ namespace MunicipalityApp
 
         public IssueDetailsViewModel()
         {
+            // Test values
+            //////////////////////////////////////////
             IssueState = new IssueState()
             {
                 Id = 1,
@@ -68,8 +71,8 @@ namespace MunicipalityApp
             DateEdited = "2021-12-01 10:01";
             Category = "Test";
             SubCategory = "Hest";
+            NumberOfVerifications = 2;
             IsBlocked = false;
-
             MunicipalityResponses = new ObservableCollection<MunicipalityResponse>()
             {
                 new MunicipalityResponse()
@@ -78,11 +81,11 @@ namespace MunicipalityApp
                     IsInEditMode = false,
                     DateCreated = DateTime.Now,
                     DateEdited = DateTime.Parse("2021-10-10 10:00:01"),
-                    Response = "This is a long test, very long This is a long test, very long This is a long test, very long This is a long test, very long This is a long test, very long This is a long test, very long This is a long test, very long This is a long test, very long This is a long test, very long This is a long test, very long"
+                    Response = "This is a long test"
                 }
             };
-
-            Description = "Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test Dette er en test";
+            Description = "Dette er en test";
+            //////////////////////////////////////////
 
             AddResponseCommand = new RelayCommand(() =>
             {
@@ -163,6 +166,7 @@ namespace MunicipalityApp
 
             Category = Issue.Category.Name;
             SubCategory = Issue.SubCategory.Name;
+            NumberOfVerifications = Issue.IssueVerificationCitizenIds.Count;
 
             LoadNewIssueStates();
         }
@@ -443,6 +447,7 @@ namespace MunicipalityApp
         public string Category { get => category; set => SetValue(ref category, value); }
         public string SubCategory { get => subCategory; set => SetValue(ref subCategory, value); }
         public string Description { get => description; set => SetValue(ref description, value); }
+        public int NumberOfVerifications { get => numberOfVerifications; set => SetValue(ref numberOfVerifications, value); }
         public ObservableCollection<MunicipalityResponse> MunicipalityResponses { get => municipalityResponses; set => SetValue(ref municipalityResponses, value); }
         public ICommand SaveAllChangesCommand { get => saveAllChangesCommand; set => SetValue(ref saveAllChangesCommand, value); }
         public ICommand AddResponseCommand { get => addResponseCommand; set => SetValue(ref addResponseCommand, value); }
