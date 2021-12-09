@@ -99,7 +99,7 @@ namespace MunicipalityApp.Webservices.WASP
         public async Task<WASPServiceResponse<WASPResponse>> BlockCitizen(int citizenId)
         {
             return await ActionCallAsync<WASPResponse>(
-                () => RestHelper.SendPutRequest($"{CitizenControllerPath}BlockCitizen",
+                () => RestHelper.SendPostRequest($"{CitizenControllerPath}BlockCitizen",
                 restParameters: new List<RestParameter>() {
                     new RestParameter("citizenId", citizenId.ToString())
                 }));
@@ -108,7 +108,7 @@ namespace MunicipalityApp.Webservices.WASP
         public async Task<WASPServiceResponse<WASPResponse>> UnblockCitizen(int citizenId)
         {
             return await ActionCallAsync<WASPResponse>(
-                () => RestHelper.SendPutRequest($"{CitizenControllerPath}UnblockCitizen",
+                () => RestHelper.SendPostRequest($"{CitizenControllerPath}UnblockCitizen",
                 restParameters: new List<RestParameter>() {
                     new RestParameter("citizenId", citizenId.ToString())
                 }));
@@ -137,7 +137,7 @@ namespace MunicipalityApp.Webservices.WASP
         public async Task<WASPServiceResponse<WASPResponse>> UpdateIssueStatus(int issueId, int issueStateId)
         {
             return await ActionCallAsync<WASPResponse>(
-                () => RestHelper.SendPutRequest($"{IssueControllerPath}UpdateIssueStatus",
+                () => RestHelper.SendPostRequest($"{IssueControllerPath}UpdateIssueStatus",
                 restParameters: new List<RestParameter>() {
                     new RestParameter("issueId", issueId.ToString()),
                     new RestParameter("issueStateId", issueStateId.ToString())
