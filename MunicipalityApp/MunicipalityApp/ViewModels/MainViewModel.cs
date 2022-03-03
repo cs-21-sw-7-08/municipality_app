@@ -192,7 +192,8 @@ namespace MunicipalityApp
                 HideProgress(MainView.Main);
                 GeneralUtil.RunOnUIThread(() =>
                 {
-                    GetListOfIssues(getCategories: true); ;
+                    ResetFilter();
+                    GetListOfIssues(getCategories: true);
                 });
             });
         }
@@ -205,6 +206,39 @@ namespace MunicipalityApp
         #region Overview
 
         private void SetupOverview()
+        {
+            ResetFilter();
+
+            CategoryCheckedChangedCommand = new RelayCommand<Category>((category) =>
+            {
+                if (!category.IsSelected)
+                {
+                    SubCategories = SubCategories.Where(x => x.Id != category.Id).ToObservableCollection();
+                }
+                else
+                {
+                    category.SubCategories.ForEach(x => x.IsSelected = false);
+                    SubCategories.Add(category);
+                }
+            });
+            ApplyFilterCommand = new RelayCommand(() =>
+            {
+                var tempIssueStateIds = IssueStates.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+                IssueFilter.IssueStateIds = tempIssueStateIds.Count == 0 ? null : tempIssueStateIds;
+                var tempCategoryIds = Categories.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+                IssueFilter.CategoryIds = tempCategoryIds.Count == 0 ? null : tempCategoryIds;
+                var tempSubCategoryIds = SubCategories.SelectMany(x => x.SubCategories)
+                                                      .Where(x => x.IsSelected == true)
+                                                      .Select(x => x.Id)
+                                                      .ToList();
+                IssueFilter.CategoryIds = tempCategoryIds.Count == 0 ? null : tempCategoryIds;
+                IssueFilter.SubCategoryIds = tempSubCategoryIds.Count == 0 ? null : tempSubCategoryIds;
+                IssueFilter.IsBlocked = IsBlocked;
+                GetListOfIssues();
+            });
+        }
+
+        private void ResetFilter()
         {
             IsBlocked = false;
             IssueStates = new ObservableCollection<IssueState>()
@@ -240,34 +274,6 @@ namespace MunicipalityApp
                 IsBlocked = IsBlocked,
                 IssueStateIds = IssueStates.Where(x => x.IsSelected).Select(x => x.Id).ToList()
             };
-
-            CategoryCheckedChangedCommand = new RelayCommand<Category>((category) =>
-            {
-                if (!category.IsSelected)
-                {
-                    SubCategories = SubCategories.Where(x => x.Id != category.Id).ToObservableCollection();
-                }
-                else
-                {
-                    category.SubCategories.ForEach(x => x.IsSelected = false);
-                    SubCategories.Add(category);
-                }
-            });
-            ApplyFilterCommand = new RelayCommand(() =>
-            {
-                var tempIssueStateIds = IssueStates.Where(x => x.IsSelected).Select(x => x.Id).ToList();
-                IssueFilter.IssueStateIds = tempIssueStateIds.Count == 0 ? null : tempIssueStateIds;
-                var tempCategoryIds = Categories.Where(x => x.IsSelected).Select(x => x.Id).ToList();
-                IssueFilter.CategoryIds = tempCategoryIds.Count == 0 ? null : tempCategoryIds;
-                var tempSubCategoryIds = SubCategories.SelectMany(x => x.SubCategories)
-                                                      .Where(x => x.IsSelected = true)
-                                                      .Select(x => x.Id)
-                                                      .ToList();
-                IssueFilter.CategoryIds = tempCategoryIds.Count == 0 ? null : tempCategoryIds;
-                IssueFilter.SubCategoryIds = tempSubCategoryIds.Count == 0 ? null : tempSubCategoryIds;
-                IssueFilter.IsBlocked = IsBlocked;
-                GetListOfIssues();
-            });
         }
         
         private void GetListOfIssues(bool getCategories = false)
